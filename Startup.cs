@@ -43,7 +43,7 @@ namespace ProjectAuth
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Account}/{action=Index}/{id?}");
+                    template: "{controller=Roles}/{action=Index}/{id?}");
             });
             app.Run(async (context) =>
             {

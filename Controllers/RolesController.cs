@@ -9,6 +9,8 @@ using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Http.Internal;
 using ProjectAuth.Models;
 using System.Security.Claims;
+//using System.Data.Entity;
+using Microsoft.Data.Entity;
 
 namespace ProjectAuth.Controllers
 {
@@ -25,6 +27,11 @@ namespace ProjectAuth.Controllers
             context = db;
         }
 
+        public ActionResult Index()
+        {
+            var roles = context.Roles.ToList();
+            return View(roles);
+        }
 
 
         public ActionResult Create()
@@ -32,7 +39,16 @@ namespace ProjectAuth.Controllers
             return View();
         }
 
-    
+
+        public ActionResult Delete(string RoleName)
+        {
+            var thisRole = context.Roles.Where(r => r.Name.Equals(RoleName, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+            context.Roles.Remove(thisRole);
+            context.SaveChanges();
+            return RedirectToAction("Index");
+        }
+
+
         [HttpPost]
         public IActionResult Create(string RoleName)
         {
@@ -49,7 +65,32 @@ namespace ProjectAuth.Controllers
             catch
             {
                 return View();
-    }
-}
+            }
+        }
+
+        //
+        // GET: /Roles/Edit/5
+        public ActionResult Edit(string roleName)
+        {
+            var thisRole = context.Roles.Where(r => r.Name.Equals(roleName, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+
+            return View(thisRole);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditRole(IdentityRole thisRole)
+        {
+
+            var oldRole = thisRole;
+
+            thisRole.Name = Request.Form["Name"];
+            context.Roles.Update(oldRole);
+            context.SaveChanges();
+
+                return RedirectToAction("Index");
+           
+        }
     }
 }
